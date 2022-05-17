@@ -1,0 +1,100 @@
+#include<bits/stdc++.h>
+using namespace std; 
+
+#define P 5
+#define R 3 
+int total = 0; 
+  
+bool is_available(int process_id, int allocated[][R], int max[][R], int need[][R], int available[]) { 
+    bool flag = true; 
+    for (int i = 0; i < R; i++) { 
+  
+        if (need[process_id][i] > available[i]) 
+            flag = false; 
+    } 
+    return flag; 
+} 
+  
+void safe_sequence(bool marked[], int allocated[][R], int max[][R], int need[][R], int available[], vector<int> safe) { 
+  
+    for (int i = 0; i < P; i++) { 
+  
+        if (!marked[i] && is_available(i, allocated, max, need, available)) { 
+  
+            marked[i] = true; 
+  
+            for (int j = 0; j < R; j++) 
+                available[j] += allocated[i][j]; 
+  
+            safe.push_back(i); 
+            safe_sequence(marked, allocated, max, need, available, safe); 
+            safe.pop_back(); 
+  
+            marked[i] = false; 
+  
+            for (int j = 0; j < R; j++) 
+                available[j] -= allocated[i][j]; 
+        } 
+    } 
+  
+    if (safe.size() == P) { 
+  
+        total++; 
+        for (int i = 0; i < P; i++) { 
+  
+            cout << "P" << safe[i] + 1; 
+            if (i != (P - 1)) 
+                cout << "--> "; 
+        } 
+  
+        cout << endl; 
+    } 
+} 
+  
+int main() 
+{ 
+  
+    int i,j;
+    cout<<"For "<<P<<" process and "<< R <<" Resource type: "<<endl;
+    cout<<"Allocated Resource for each instance type: \n";
+    int allocated[P][R];
+    for(i=0;i<P;i++){
+        for(j=0;j<R;j++){
+            cout<<"For Process["<<i<<"] and resource["<<j<<"] : ";
+            cin>>allocated[i][j];
+        }
+    }
+    
+    cout<<"\n";
+    cout<<"Enter Max needed for each resource and instance: \n";
+    int max[P][R];
+    for(i=0;i<P;i++){
+        for(j=0;j<R;j++){
+            cout<<"For Process["<<i<<"] and resource["<<j<<"] : ";
+            cin>>max[i][j];
+        }
+    }
+
+    cout<<"\n";
+    cout<<"Total resource for each instance type: \n";
+    int available[R]; 
+    for(i=0;i<R;i++){
+        cout<<"Enter Resource instance type ["<<i<<"]: ";
+        cin>>available[i];
+    } 
+  
+    vector<int> safe; 
+    bool marked[P]; 
+    memset(marked, false, sizeof(marked)); 
+  
+    int need[P][R]; 
+    for (int i = 0; i < P; i++) 
+        for (int j = 0; j < R; j++) 
+            need[i][j] = max[i][j] - allocated[i][j]; 
+  
+    cout << "Safe sequences are:" << endl; 
+    safe_sequence(marked, allocated, max, need, available, safe); 
+  
+    cout << "There are total " << total << " safe-sequences" << endl; 
+    return 0; 
+}
